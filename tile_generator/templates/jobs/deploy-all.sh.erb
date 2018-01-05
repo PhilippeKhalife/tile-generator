@@ -56,12 +56,13 @@ function import_opsmgr_variables() {
 	{% endfor %}
 	{% endfor %}
 	{% for release in context.releases.values() if release.consumes %}
-	{% for link_type, link in release.consumes.iteritems() %}
-	<% if_link('{{ link.name or link_type }}') do |link| %>
+	{% for link_name, link in release.consumes.iteritems() %}
+	<% if_link('{{ link_name }}') do |link| %>
+	<% hosts = {} %>
 	<% hosts = link.instances.map { |instance| instance.address } %>
-	export {{ link.name | upper or link_type | upper }}_HOST="<%= link.instances[0].address %>"
-	export {{ link.name | upper or link_type | upper }}_HOSTS=<%= Shellwords.escape(hosts.to_json) %>
-	export {{ link.name | upper or link_type | upper }}_PROPERTIES=<%= Shellwords.escape(link.properties.to_json) %>
+	export {{ link_name | upper }}_HOST="<%= link.instances[0].address %>"
+	export {{ link_name | upper }}_HOSTS=<%= Shellwords.escape(hosts.to_json) %>
+	export {{ link_name | upper }}_PROPERTIES=<%= Shellwords.escape(link.properties.to_json) %>
 	<% end %>
 	{% endfor %}
         {% endfor %}
@@ -175,11 +176,11 @@ function add_env_vars() {
 
 	# bosh links
 	{% for release in context.releases.values() if release.consumes %}
-	{% for link_type, link in release.consumes.iteritems() %}
-	<% if_link('{{ link.name or link_type }}') do |link| %>
-	cf set-env $1 {{ link.name | upper or link_type | upper }}_HOST "${{ link.name | upper or link_type | upper }}_HOST"
-	cf set-env $1 {{ link.name | upper or link_type | upper }}_HOSTS "${{ link.name | upper or link_type | upper }}_HOSTS"
-	cf set-env $1 {{ link.name | upper or link_type | upper }}_PROPERTIES "${{ link.name | upper or link_type | upper }}_PROPERTIES"
+	{% for link_name, link in release.consumes.iteritems() %}
+	<% if_link('{{ link_name }}') do |link| %>
+	cf set-env $1 {{ link_name | upper }}_HOST "${{ link_name | upper }}_HOST"
+	cf set-env $1 {{ link_name | upper }}_HOSTS "${{ link_name | upper }}_HOSTS"
+	cf set-env $1 {{ link_name | upper }}_PROPERTIES "${{ link_name | upper }}_PROPERTIES"
 	<% end %>
 	{% endfor %}
 	{% endfor %}

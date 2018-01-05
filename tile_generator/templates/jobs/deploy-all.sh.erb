@@ -57,12 +57,12 @@ function import_opsmgr_variables() {
 	{% endfor %}
 	{% for release in context.releases.values() if release.consumes %}
 	{% for link_name, link in release.consumes.iteritems() %}
-	<% if_link('{{ link_name }}') do |link| %>
-	<% hosts = {} %>
-	<% hosts = link.instances.map { |instance| instance.address } %>
-	export {{ link_name | upper }}_HOST="<%= link.instances[0].address %>"
-	export {{ link_name | upper }}_HOSTS=<%= Shellwords.escape(hosts.to_json) %>
-	export {{ link_name | upper }}_PROPERTIES=<%= Shellwords.escape(link.properties.to_json) %>
+	<% if_link("{{ link_name }}") do |{{link_name}}| %>
+	<% {{link_name}}hosts = {} %>
+	<% {{link_name}}hosts = {{link_name}}.instances.map { |{{link_name}}_instance| {{link_name}}_instance.address } %>
+	export {{ link_name | upper }}_HOST="<%= {{link_name}}.instances[0].address %>"
+	export {{ link_name | upper }}_HOSTS=<%= Shellwords.escape({{link_name}}hosts.to_json) %>
+        export {{ link_name | upper }}_PROPERTIES=<%= Shellwords.escape({{link_name}}.properties.to_json) %>
 	<% end %>
 	{% endfor %}
         {% endfor %}
@@ -177,7 +177,7 @@ function add_env_vars() {
 	# bosh links
 	{% for release in context.releases.values() if release.consumes %}
 	{% for link_name, link in release.consumes.iteritems() %}
-	<% if_link('{{ link_name }}') do |link| %>
+	<% if_link("{{ link_name }}") do |{{link_name}}| %>
 	cf set-env $1 {{ link_name | upper }}_HOST "${{ link_name | upper }}_HOST"
 	cf set-env $1 {{ link_name | upper }}_HOSTS "${{ link_name | upper }}_HOSTS"
 	cf set-env $1 {{ link_name | upper }}_PROPERTIES "${{ link_name | upper }}_PROPERTIES"
